@@ -15,8 +15,8 @@ function main(): void {
 
   document.addEventListener('click', getAnswerFromTheMagicBall);
 
-  let timeout: NodeJS.Timeout | null;
-  let hideAnswerTImeout: NodeJS.Timeout | null;
+  let timeout: number | null;
+  let hideAnswerTImeout: number | null;
 
   function getAnswerFromTheMagicBall(): void {
     if (timeout || hideAnswerTImeout) {
@@ -24,7 +24,7 @@ function main(): void {
     }
     sceneRenderer.question();
     timeout = setTimeout(() => {
-      clearTimeout(timeout as NodeJS.Timeout);
+      clearTimeout(timeout as number);
       timeout = null;
       const answer = getRandomAnswer();
       displayAnswer(answer);
@@ -34,7 +34,7 @@ function main(): void {
   function displayAnswer(answer: Answer): void {
     sceneRenderer.showAnswer(answer.text);
     hideAnswerTImeout = setTimeout(() => {
-      clearTimeout(hideAnswerTImeout as NodeJS.Timeout);
+      clearTimeout(hideAnswerTImeout as number);
       hideAnswerTImeout = null;
       sceneRenderer.hideAnswer();
     }, 5000);

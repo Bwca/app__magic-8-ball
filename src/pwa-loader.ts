@@ -13,6 +13,6 @@ async function registerSW() {
       alert('ServiceWorker registration failed. Sorry about that.');
     }
   } else {
-    // document.querySelector('.alert').removeAttribute('hidden');
+    document.querySelector('.alert')?.removeAttribute('hidden');
   }
 }
