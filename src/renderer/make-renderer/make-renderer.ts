@@ -6,6 +6,7 @@ export function makeRenderer(): AbstractRenderer {
   return makeHtmlRenderer();
 }
 
+/** TODO: implement canvas renderer */
 function makeCanvasRenderer(): CanvasRenderer {
   const canvas = document.querySelector('canvas');
   if (!canvas) {
