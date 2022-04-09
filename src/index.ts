@@ -1,6 +1,5 @@
-import { Answer } from './answer/answer.model';
-import { ANSWERS_PARAMS_KEY } from './answer/answers-params-key.const';
-import { DEFAULT_ANSWERS } from './answer/default-answers.const';
+import { Answer } from './answer';
+import { loadAnswers } from './load-answers';
 import { initPwa } from './pwa-loader';
 import { makeRenderer } from './renderer';
 
@@ -24,7 +23,9 @@ function main(): void {
     }
     sceneRenderer.question();
     timeout = setTimeout(() => {
-      clearTimeout(timeout as NodeJS.Timeout);
+      if (timeout) {
+        clearTimeout(timeout);
+      }
       timeout = null;
       const answer = getRandomAnswer();
       displayAnswer(answer);
@@ -34,7 +35,9 @@ function main(): void {
   function displayAnswer(answer: Answer): void {
     sceneRenderer.showAnswer(answer.text);
     hideAnswerTImeout = setTimeout(() => {
-      clearTimeout(hideAnswerTImeout as NodeJS.Timeout);
+      if (hideAnswerTImeout) {
+        clearTimeout(hideAnswerTImeout);
+      }
       hideAnswerTImeout = null;
       sceneRenderer.hideAnswer();
     }, 5000);
@@ -44,21 +47,5 @@ function main(): void {
     const maxIndex = answers.length - 1;
     const index = Math.floor(Math.random() * Math.floor(maxIndex));
     return answers[index];
-  }
-
-  function loadAnswers(): Readonly<Answer[]> {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (!urlParams.has(ANSWERS_PARAMS_KEY)) {
-      return DEFAULT_ANSWERS;
-    }
-
-    try {
-      const customAnswers = JSON.parse(urlParams.get(ANSWERS_PARAMS_KEY) as string);
-      history.replaceState('', '', '/');
-      return customAnswers;
-    } catch (e) {
-      return DEFAULT_ANSWERS;
-    }
   }
 }
