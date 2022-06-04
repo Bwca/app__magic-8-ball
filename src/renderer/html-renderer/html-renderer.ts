@@ -1,4 +1,5 @@
 import { AbstractRenderer } from '../models/abstract-renderer';
+import { AnswerPayload } from '../models/answer-payload';
 import { HtmlRendererStyle } from './html-renderer.style.enum';
 import './html-renderer.style.scss';
 
@@ -6,20 +7,15 @@ export class HtmlRenderer implements AbstractRenderer {
   public ball!: HTMLElement;
   private answerContainer!: HTMLElement;
   private answer!: HTMLElement;
+  private isInProgress = false;
 
-  public hideAnswer(): void {
-    this.answerContainer.classList.remove(HtmlRendererStyle.IsVisible);
-  }
-
-  public question(): void {
-    this.hideAnswer();
-    this.ball.classList.add(HtmlRendererStyle.IsShaking);
-  }
-
-  public showAnswer(str: string) {
-    this.answer.textContent = str;
-    this.ball.classList.remove(HtmlRendererStyle.IsShaking);
-    this.answerContainer.classList.add(HtmlRendererStyle.IsVisible);
+  public showAnswer({ answer, lineSeparator }: AnswerPayload): void {
+    if (this.isInProgress) {
+      return;
+    }
+    this.isInProgress = true;
+    answer = lineSeparator ? answer.replaceAll(lineSeparator, '\n') : answer;
+    this.changeAnswer(answer);
   }
 
   public showBall(host: HTMLElement) {
@@ -48,5 +44,20 @@ export class HtmlRenderer implements AbstractRenderer {
     canvas.appendChild(ball);
 
     host.appendChild(canvas);
+  }
+
+  private async changeAnswer(answer: string): Promise<void> {
+    this.answerContainer.classList.remove(HtmlRendererStyle.IsVisible);
+    await this.wait(1000);
+    this.ball.classList.add(HtmlRendererStyle.IsShaking);
+    await this.wait(500);
+    this.answer.textContent = answer;
+    this.ball.classList.remove(HtmlRendererStyle.IsShaking);
+    this.answerContainer.classList.add(HtmlRendererStyle.IsVisible);
+    this.isInProgress = false;
+  }
+
+  private async wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

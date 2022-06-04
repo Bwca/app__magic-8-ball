@@ -9,16 +9,17 @@ function main(): void {
   initPwa();
 
   const answers = loadAnswers();
-  const sceneRenderer = makeRenderer();
+  const sceneRenderer = makeRenderer('THREE', 0x000000);
   sceneRenderer.showBall(document.body);
 
-  document.addEventListener('click', getAnswerFromTheMagicBall);
-
-  function getAnswerFromTheMagicBall(): void {
-    sceneRenderer.question();
-    const answer = getRandomAnswer();
-    sceneRenderer.showAnswer(answer.text, '|');
-  }
+  document.addEventListener('click', (event) => {
+    const { text: answer } = getRandomAnswer();
+    sceneRenderer.showAnswer({
+      answer,
+      event,
+      lineSeparator: '|',
+    });
+  });
 
   function getRandomAnswer(): Answer {
     const maxIndex = answers.length - 1;
