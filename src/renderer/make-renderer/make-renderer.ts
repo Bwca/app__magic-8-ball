@@ -1,8 +1,11 @@
+import { THREEBall8Renderer } from 'fork-magic-8-ball';
+
 import { CanvasRenderer } from '../canvas-renderer/canvas-renderer';
 import { HtmlRenderer } from '../html-renderer/html-renderer';
 import { AbstractRenderer } from '../models/abstract-renderer';
 
 export function makeRenderer(): AbstractRenderer {
+  return new THREEBall8Renderer();
   return makeHtmlRenderer();
 }
 

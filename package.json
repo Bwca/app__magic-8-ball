@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.ts",
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "scripts": {
-    "dev": "parcel ./src/index.html",
+    "start": "parcel ./src/index.html",
     "build": "parcel build src/index.html --public-url './' --no-source-maps",
     "css-types": "css-types",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +33,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/pug": "^2.0.4"
+    "@types/pug": "^2.0.4",
+    "fork-magic-8-ball": "file:fork-magic-8-ball-1.0.3.tgz"
   }
 }
