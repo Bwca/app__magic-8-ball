@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "start": "parcel ./src/index.html",
-    "build": "parcel build src/index.html --public-url './' --no-source-maps",
+    "build": "parcel build src/index.html --public-url './' --no-minify --no-source-maps",
     "css-types": "css-types",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
