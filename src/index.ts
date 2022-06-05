@@ -1,5 +1,8 @@
 import { Answer } from './answer';
+import { LINEBREAK_SYMBOL } from './line-brean-symbol';
 import { loadAnswers } from './load-answers';
+import { loadColor } from './load-color';
+import { loadRendererType } from './load-renderer-type';
 import { initPwa } from './pwa-loader';
 import { makeRenderer } from './renderer';
 
@@ -9,7 +12,9 @@ function main(): void {
   initPwa();
 
   const answers = loadAnswers();
-  const sceneRenderer = makeRenderer('THREE', 0x000000);
+  const color = loadColor();
+  const rendererType = loadRendererType();
+  const sceneRenderer = makeRenderer(rendererType, color);
   sceneRenderer.showBall(document.body);
 
   document.addEventListener('click', (event) => {
@@ -17,7 +22,7 @@ function main(): void {
     sceneRenderer.showAnswer({
       answer,
       event,
-      lineSeparator: '|',
+      lineSeparator: LINEBREAK_SYMBOL,
     });
   });
 
