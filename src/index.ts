@@ -1,5 +1,5 @@
-import { Answer } from './answer';
-import { LINEBREAK_SYMBOL } from './line-brean-symbol';
+import { createMotionDetector } from './create-motion-detector';
+import { createShowAnswer } from './create-show-answer';
 import { loadAnswers } from './load-answers';
 import { loadColor } from './load-color';
 import { loadRendererType } from './load-renderer-type';
@@ -12,23 +12,15 @@ function main(): void {
   initPwa();
 
   const answers = loadAnswers();
+
   const color = loadColor();
   const rendererType = loadRendererType();
   const sceneRenderer = makeRenderer(rendererType, color);
   sceneRenderer.showBall(document.body);
 
-  document.addEventListener('click', (event) => {
-    const { text: answer } = getRandomAnswer();
-    sceneRenderer.showAnswer({
-      answer,
-      event,
-      lineSeparator: LINEBREAK_SYMBOL,
-    });
-  });
+  const showAnswer = createShowAnswer(sceneRenderer, [...answers]);
+  const showAnswerOnShake = createMotionDetector(showAnswer);
 
-  function getRandomAnswer(): Answer {
-    const maxIndex = answers.length - 1;
-    const index = Math.floor(Math.random() * Math.floor(maxIndex));
-    return answers[index];
-  }
+  document.addEventListener('click', showAnswer);
+  window.addEventListener('devicemotion', showAnswerOnShake);
 }

@@ -65,7 +65,7 @@ export const DEFAULT_ANSWERS: Readonly<Answer[]> = [
   },
 
   {
-    text: "Don't count on it.",
+    text: "Don't count on it",
     type: AnswerTypes.Negative,
   },
   {
