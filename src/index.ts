@@ -19,7 +19,7 @@ function main(): void {
   sceneRenderer.showBall(document.body);
 
   const showAnswer = createShowAnswer(sceneRenderer, [...answers]);
-  const showAnswerOnShake = createMotionDetector(showAnswer);
+  const showAnswerOnShake = createMotionDetector(() => sceneRenderer.hideAnswer(), showAnswer);
 
   document.addEventListener('click', showAnswer);
   window.addEventListener('devicemotion', showAnswerOnShake);

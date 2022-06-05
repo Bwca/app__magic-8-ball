@@ -9,6 +9,10 @@ export class HtmlRenderer implements AbstractRenderer {
   private answer!: HTMLElement;
   private isInProgress = false;
 
+  public hideAnswer(): void {
+    this.answerContainer.classList.remove(HtmlRendererStyle.IsVisible);
+  }
+
   public showAnswer({ answer, lineSeparator }: AnswerPayload): void {
     if (this.isInProgress) {
       return;
@@ -49,10 +53,7 @@ export class HtmlRenderer implements AbstractRenderer {
   private async changeAnswer(answer: string): Promise<void> {
     this.answerContainer.classList.remove(HtmlRendererStyle.IsVisible);
     await this.wait(1000);
-    this.ball.classList.add(HtmlRendererStyle.IsShaking);
-    await this.wait(500);
     this.answer.textContent = answer;
-    this.ball.classList.remove(HtmlRendererStyle.IsShaking);
     this.answerContainer.classList.add(HtmlRendererStyle.IsVisible);
     this.isInProgress = false;
   }
