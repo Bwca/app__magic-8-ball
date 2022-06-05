@@ -9,39 +9,17 @@ function main(): void {
   initPwa();
 
   const answers = loadAnswers();
-  const sceneRenderer = makeRenderer();
+  const sceneRenderer = makeRenderer('THREE', 0x000000);
   sceneRenderer.showBall(document.body);
 
-  document.addEventListener('click', getAnswerFromTheMagicBall);
-
-  let timeout: NodeJS.Timeout | null;
-  let hideAnswerTImeout: NodeJS.Timeout | null;
-
-  function getAnswerFromTheMagicBall(): void {
-    if (timeout || hideAnswerTImeout) {
-      return;
-    }
-    sceneRenderer.question();
-    timeout = setTimeout(() => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-      timeout = null;
-      const answer = getRandomAnswer();
-      displayAnswer(answer);
-    }, 2000);
-  }
-
-  function displayAnswer(answer: Answer): void {
-    sceneRenderer.showAnswer(answer.text);
-    hideAnswerTImeout = setTimeout(() => {
-      if (hideAnswerTImeout) {
-        clearTimeout(hideAnswerTImeout);
-      }
-      hideAnswerTImeout = null;
-      sceneRenderer.hideAnswer();
-    }, 5000);
-  }
+  document.addEventListener('click', (event) => {
+    const { text: answer } = getRandomAnswer();
+    sceneRenderer.showAnswer({
+      answer,
+      event,
+      lineSeparator: '|',
+    });
+  });
 
   function getRandomAnswer(): Answer {
     const maxIndex = answers.length - 1;
