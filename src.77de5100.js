@@ -117,7 +117,81 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"mash":[function(require,module,exports) {
+})({"../node_modules/@merry-solutions/debounce/dist/index.js":[function(require,module,exports) {
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});function n(o,t){let e;return[(...u)=>new Promise(c=>{e&&clearTimeout(e),e=setTimeout(()=>{c(o(...u))},t)}),()=>{clearTimeout(e)}]}exports.debounce = n;
+
+},{}],"create-motion-detector.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createMotionDetector = void 0;
+
+var debounce_1 = require("@merry-solutions/debounce");
+
+function createMotionDetector(onMotioNStart, onMotionEnd) {
+  var current = {
+    x: 0,
+    y: 0
+  };
+  var isMotionInProgress = false;
+  var debouncedShowAnswer = debounce_1.debounce(onMotionEnd, 500)[0];
+  return function (event) {
+    var _a, _b, _c, _d, _e, _f;
+
+    var hasSignificantVerticalMovement = Math.abs(current.y - ((_b = (_a = event.accelerationIncludingGravity) === null || _a === void 0 ? void 0 : _a.y) !== null && _b !== void 0 ? _b : 0)) > 10;
+
+    if (hasSignificantVerticalMovement && !isMotionInProgress) {
+      current.x = (_d = (_c = event.accelerationIncludingGravity) === null || _c === void 0 ? void 0 : _c.x) !== null && _d !== void 0 ? _d : 0;
+      current.y = (_f = (_e = event.accelerationIncludingGravity) === null || _e === void 0 ? void 0 : _e.y) !== null && _f !== void 0 ? _f : 0;
+      isMotionInProgress = true;
+      onMotioNStart();
+    } else if (isMotionInProgress) {
+      debouncedShowAnswer();
+      isMotionInProgress = false;
+    }
+  };
+}
+
+exports.createMotionDetector = createMotionDetector;
+},{"@merry-solutions/debounce":"../node_modules/@merry-solutions/debounce/dist/index.js"}],"line-brean-symbol.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LINEBREAK_SYMBOL = void 0;
+exports.LINEBREAK_SYMBOL = '|';
+},{}],"create-show-answer.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createShowAnswer = void 0;
+
+var line_brean_symbol_1 = require("./line-brean-symbol");
+
+function createShowAnswer(renderer, answers) {
+  return function (event) {
+    var answer = getRandomAnswer(answers).text;
+    renderer.showAnswer({
+      answer: answer,
+      event: event,
+      lineSeparator: line_brean_symbol_1.LINEBREAK_SYMBOL
+    });
+  };
+}
+
+exports.createShowAnswer = createShowAnswer;
+
+function getRandomAnswer(answers) {
+  var maxIndex = answers.length - 1;
+  var index = Math.floor(Math.random() * Math.floor(maxIndex));
+  return answers[index];
+}
+},{"./line-brean-symbol":"line-brean-symbol.ts"}],"answer/answer-types.enum.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -131,7 +205,63 @@ var AnswerTypes;
   AnswerTypes["NonCommittal"] = "non-committal";
   AnswerTypes["Negative"] = "negative";
 })(AnswerTypes = exports.AnswerTypes || (exports.AnswerTypes = {}));
-},{}],"jRzh":[function(require,module,exports) {
+},{}],"answer/insert-answer-line-breaks.ts":[function(require,module,exports) {
+"use strict";
+
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.insertAnswerLineBreaks = void 0;
+
+var line_brean_symbol_1 = require("../line-brean-symbol");
+
+var lineLimit = 10;
+
+function insertAnswerLineBreaks(answer) {
+  var text = answer.text;
+  var words = text.split(/\s/);
+  var textWithLineBreaks = '';
+  var currentLine = '';
+
+  for (var _i = 0, words_1 = words; _i < words_1.length; _i++) {
+    var word = words_1[_i];
+    var newLine = currentLine.concat(' ', word).trim();
+
+    if (newLine.length < lineLimit) {
+      currentLine = newLine;
+      continue;
+    }
+
+    var lineToAdd = newLine.length === lineLimit ? newLine : currentLine;
+    textWithLineBreaks = textWithLineBreaks.concat(line_brean_symbol_1.LINEBREAK_SYMBOL, lineToAdd);
+    currentLine = newLine.length === lineLimit ? '' : word;
+  }
+
+  if (currentLine) {
+    textWithLineBreaks = textWithLineBreaks.concat(line_brean_symbol_1.LINEBREAK_SYMBOL, currentLine);
+  }
+
+  return __assign(__assign({}, answer), {
+    text: textWithLineBreaks
+  });
+}
+
+exports.insertAnswerLineBreaks = insertAnswerLineBreaks;
+},{"../line-brean-symbol":"line-brean-symbol.ts"}],"answer/default-answers.const.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -141,74 +271,76 @@ exports.DEFAULT_ANSWERS = void 0;
 
 var answer_types_enum_1 = require("./answer-types.enum");
 
+var insert_answer_line_breaks_1 = require("./insert-answer-line-breaks");
+
 exports.DEFAULT_ANSWERS = [{
-  text: 'It is|certain.',
+  text: 'It is certain',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'It is|decidedly so.',
+  text: 'It is decidedly so',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Without|a doubt.',
+  text: 'Without a doubt',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Yes | definitely.',
+  text: 'Yes definitely',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'You may|rely on it.',
+  text: 'You may rely on it',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'As I see|it, yes.',
+  text: 'As I see it, yes',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Most|likely.',
+  text: 'Most likely',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Outlook|good.',
+  text: 'Outlook good',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Yes.',
+  text: 'Yes',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Signs point|to yes.',
+  text: 'Signs point to yes',
   type: answer_types_enum_1.AnswerTypes.Affirmative
 }, {
-  text: 'Reply hazy,|try again.',
+  text: 'Reply hazy, try again',
   type: answer_types_enum_1.AnswerTypes.NonCommittal
 }, {
-  text: 'Ask again|later.',
+  text: 'Ask again later',
   type: answer_types_enum_1.AnswerTypes.NonCommittal
 }, {
-  text: 'Better not|tell you now.',
+  text: 'Better not tell you now',
   type: answer_types_enum_1.AnswerTypes.NonCommittal
 }, {
-  text: 'Cannot|predict now.',
+  text: 'Cannot predict now',
   type: answer_types_enum_1.AnswerTypes.NonCommittal
 }, {
-  text: 'Concentrate and|ask again.',
+  text: 'Concentrate and ask again',
   type: answer_types_enum_1.AnswerTypes.NonCommittal
 }, {
-  text: "Don't count|on it.",
+  text: "Don't count on it",
   type: answer_types_enum_1.AnswerTypes.Negative
 }, {
-  text: 'My reply|is no.',
+  text: 'My reply is no',
   type: answer_types_enum_1.AnswerTypes.Negative
 }, {
-  text: 'My sources|say no.',
+  text: 'My sources say no',
   type: answer_types_enum_1.AnswerTypes.Negative
 }, {
-  text: 'Outlook not|so good.',
+  text: 'Outlook not so good',
   type: answer_types_enum_1.AnswerTypes.Negative
 }, {
-  text: 'Very doubtful.',
+  text: 'Very doubtful',
   type: answer_types_enum_1.AnswerTypes.Negative
-}];
-},{"./answer-types.enum":"mash"}],"mWss":[function(require,module,exports) {
+}].map(insert_answer_line_breaks_1.insertAnswerLineBreaks);
+},{"./answer-types.enum":"answer/answer-types.enum.ts","./insert-answer-line-breaks":"answer/insert-answer-line-breaks.ts"}],"answer/answer.model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-},{}],"MyjP":[function(require,module,exports) {
+},{}],"answer/answers-params-key.const.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -216,7 +348,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ANSWERS_PARAMS_KEY = void 0;
 exports.ANSWERS_PARAMS_KEY = 'answers';
-},{}],"hWX6":[function(require,module,exports) {
+},{}],"answer/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -249,7 +381,7 @@ Object.defineProperty(exports, "ANSWERS_PARAMS_KEY", {
     return answers_params_key_const_1.ANSWERS_PARAMS_KEY;
   }
 });
-},{"./default-answers.const":"jRzh","./answer.model":"mWss","./answers-params-key.const":"MyjP"}],"eGMb":[function(require,module,exports) {
+},{"./default-answers.const":"answer/default-answers.const.ts","./answer.model":"answer/answer.model.ts","./answers-params-key.const":"answer/answers-params-key.const.ts"}],"load-answers/load-answers.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -276,7 +408,7 @@ function loadAnswers() {
 }
 
 exports.loadAnswers = loadAnswers;
-},{"../answer":"hWX6"}],"WN8m":[function(require,module,exports) {
+},{"../answer":"answer/index.ts"}],"load-answers/index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -291,7 +423,52 @@ Object.defineProperty(exports, "loadAnswers", {
     return load_answers_1.loadAnswers;
   }
 });
-},{"./load-answers":"eGMb"}],"XhDE":[function(require,module,exports) {
+},{"./load-answers":"load-answers/load-answers.ts"}],"param-keys.enum.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ParamKeys = void 0;
+var ParamKeys;
+
+(function (ParamKeys) {
+  ParamKeys["BallColor"] = "bc";
+  ParamKeys["RendererType"] = "rt";
+})(ParamKeys = exports.ParamKeys || (exports.ParamKeys = {}));
+},{}],"load-color.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadColor = void 0;
+
+var param_keys_enum_1 = require("./param-keys.enum");
+
+function loadColor() {
+  var urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param_keys_enum_1.ParamKeys.BallColor) || 'Navy';
+}
+
+exports.loadColor = loadColor;
+},{"./param-keys.enum":"param-keys.enum.ts"}],"load-renderer-type.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadRendererType = void 0;
+
+var param_keys_enum_1 = require("./param-keys.enum");
+
+function loadRendererType() {
+  var urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param_keys_enum_1.ParamKeys.RendererType) || 'THREE';
+}
+
+exports.loadRendererType = loadRendererType;
+},{"./param-keys.enum":"param-keys.enum.ts"}],"pwa-loader.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -466,7 +643,7 @@ function registerSW() {
 
           return [4
           /*yield*/
-          , navigator.serviceWorker.register("sw.js")];
+          , navigator.serviceWorker.register("/sw.js")];
 
         case 2:
           _b.sent();
@@ -499,7 +676,7 @@ function registerSW() {
     });
   });
 }
-},{"./sw.js":[["sw.js","NqYy"],"NqYy"]}],"pBGv":[function(require,module,exports) {
+},{"./sw.js":[["sw.js","sw.js"],"sw.js.map","sw.js"]}],"../node_modules/process/browser.js":[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
@@ -708,7 +885,7 @@ process.chdir = function (dir) {
 process.umask = function () {
   return 0;
 };
-},{}],"MxHY":[function(require,module,exports) {
+},{}],"../node_modules/@tweenjs/tween.js/dist/tween.esm.js":[function(require,module,exports) {
 var process = require("process");
 "use strict";
 
@@ -1671,7 +1848,7 @@ var _exports = {
 };
 var _default = _exports;
 exports.default = _default;
-},{"process":"pBGv"}],"dKqR":[function(require,module,exports) {
+},{"process":"../node_modules/process/browser.js"}],"../node_modules/three/build/three.module.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -37184,7 +37361,7 @@ if (typeof window !== 'undefined') {
     window.__THREE__ = REVISION;
   }
 }
-},{}],"Kx1R":[function(require,module,exports) {
+},{}],"../node_modules/fork-magic-8-ball/dist/index.js":[function(require,module,exports) {
 var $iEn1Z$tweenjstweenjs = require("@tweenjs/tween.js");
 var $iEn1Z$three = require("three");
 
@@ -38428,28 +38605,35 @@ class $617379b6fa3b70ce$export$cef218e13b529011 {
         this.startAnimationLoop();
         this.generateAnimation(this.globalUniforms.textBackgroundVisibility, 1, 0.3, 2000, 2000).start();
     }
+    hideAnswer() {
+        if (!this.isTextVisible || this.isRunning) return;
+        this.hideText().onStart(()=>{
+            this.isRunning = true;
+        }).onComplete(()=>{
+            this.isRunning = false;
+        }).start();
+    }
     showAnswer({ answer: answer , event: event , lineSeparator: lineSeparator  }) {
         if (this.isRunning) return;
         if (event && !this.isEventInsideCentralCircle(event)) return;
-        const fadeOut = this.hideText;
-        fadeOut.onStart(()=>{
+        if (this.isTextVisible) this.hideText().onStart(()=>{
             this.isRunning = true;
-        });
-        const fadeIn = this.showText;
-        fadeIn.onStart(()=>{
-            this.setNewText(answer, lineSeparator);
-        });
-        fadeIn.onComplete(()=>{
-            this.isRunning = false;
-        });
-        fadeOut.chain(fadeIn);
-        fadeOut.start();
+        }).chain(this.showText(answer, lineSeparator)).start();
+        else this.showText(answer, lineSeparator).start();
     }
-    get hideText() {
+    get isTextVisible() {
+        return this.globalUniforms.textVisibility.value === 1;
+    }
+    hideText() {
         return this.generateAnimation(this.globalUniforms.textVisibility, 1, 0, 1000, 500);
     }
-    get showText() {
-        return this.generateAnimation(this.globalUniforms.textVisibility, 0, 1, 2000, 1000);
+    showText(answer, lineSeparator) {
+        return this.generateAnimation(this.globalUniforms.textVisibility, 0, 1, 2000, 1000).onStart(()=>{
+            this.isRunning = true;
+            this.setNewText(answer, lineSeparator);
+        }).onComplete(()=>{
+            this.isRunning = false;
+        });
     }
     isEventInsideCentralCircle(event) {
         const pointer = new (0, $iEn1Z$three.Vector2)();
@@ -38531,7 +38715,7 @@ class $617379b6fa3b70ce$export$cef218e13b529011 {
 
 
 
-},{"@tweenjs/tween.js":"MxHY","three":"dKqR"}],"ilvA":[function(require,module,exports) {
+},{"@tweenjs/tween.js":"../node_modules/@tweenjs/tween.js/dist/tween.esm.js","three":"../node_modules/three/build/three.module.js"}],"renderer/canvas-renderer/canvas-renderer.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38588,7 +38772,7 @@ function () {
 }();
 
 exports.CanvasRenderer = CanvasRenderer;
-},{}],"eslf":[function(require,module,exports) {
+},{}],"renderer/html-renderer/html-renderer.style.enum.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38606,9 +38790,79 @@ var HtmlRendererStyle;
   HtmlRendererStyle["IsVisible"] = "is-visible";
   HtmlRendererStyle["Answer"] = "answer";
 })(HtmlRendererStyle = exports.HtmlRendererStyle || (exports.HtmlRendererStyle = {}));
-},{}],"hqJS":[function(require,module,exports) {
+},{}],"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
 
-},{}],"XWAl":[function(require,module,exports) {
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)?\/[^/]+(?:\?.*)?$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"renderer/html-renderer/html-renderer.style.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"renderer/html-renderer/html-renderer.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -38768,6 +39022,10 @@ function () {
     this.isInProgress = false;
   }
 
+  HtmlRenderer.prototype.hideAnswer = function () {
+    this.answerContainer.classList.remove(html_renderer_style_enum_1.HtmlRendererStyle.IsVisible);
+  };
+
   HtmlRenderer.prototype.showAnswer = function (_a) {
     var answer = _a.answer,
         lineSeparator = _a.lineSeparator;
@@ -38815,16 +39073,7 @@ function () {
           case 1:
             _a.sent();
 
-            this.ball.classList.add(html_renderer_style_enum_1.HtmlRendererStyle.IsShaking);
-            return [4
-            /*yield*/
-            , this.wait(500)];
-
-          case 2:
-            _a.sent();
-
             this.answer.textContent = answer;
-            this.ball.classList.remove(html_renderer_style_enum_1.HtmlRendererStyle.IsShaking);
             this.answerContainer.classList.add(html_renderer_style_enum_1.HtmlRendererStyle.IsVisible);
             this.isInProgress = false;
             return [2
@@ -38851,7 +39100,7 @@ function () {
 }();
 
 exports.HtmlRenderer = HtmlRenderer;
-},{"./html-renderer.style.enum":"eslf","./html-renderer.style.scss":"hqJS"}],"Jzw2":[function(require,module,exports) {
+},{"./html-renderer.style.enum":"renderer/html-renderer/html-renderer.style.enum.ts","./html-renderer.style.scss":"renderer/html-renderer/html-renderer.style.scss"}],"renderer/make-renderer/make-renderer.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38898,7 +39147,7 @@ function makeHtmlRenderer() {
 function makeTHREERenderer(ballColor) {
   return new fork_magic_8_ball_1.THREEBall8Renderer(ballColor);
 }
-},{"fork-magic-8-ball":"Kx1R","../canvas-renderer/canvas-renderer":"ilvA","../html-renderer/html-renderer":"XWAl"}],"b60D":[function(require,module,exports) {
+},{"fork-magic-8-ball":"../node_modules/fork-magic-8-ball/dist/index.js","../canvas-renderer/canvas-renderer":"renderer/canvas-renderer/canvas-renderer.ts","../html-renderer/html-renderer":"renderer/html-renderer/html-renderer.ts"}],"renderer/index.ts":[function(require,module,exports) {
 "use strict";
 
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
@@ -38923,14 +39172,30 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 __exportStar(require("./make-renderer/make-renderer"), exports);
-},{"./make-renderer/make-renderer":"Jzw2"}],"QCba":[function(require,module,exports) {
+},{"./make-renderer/make-renderer":"renderer/make-renderer/make-renderer.ts"}],"index.ts":[function(require,module,exports) {
 "use strict";
+
+var __spreadArrays = this && this.__spreadArrays || function () {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+
+  for (var r = Array(s), k = 0, i = 0; i < il; i++) for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) r[k] = a[j];
+
+  return r;
+};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var create_motion_detector_1 = require("./create-motion-detector");
+
+var create_show_answer_1 = require("./create-show-answer");
+
 var load_answers_1 = require("./load-answers");
+
+var load_color_1 = require("./load-color");
+
+var load_renderer_type_1 = require("./load-renderer-type");
 
 var pwa_loader_1 = require("./pwa-loader");
 
@@ -38941,21 +39206,220 @@ document.addEventListener('DOMContentLoaded', main);
 function main() {
   pwa_loader_1.initPwa();
   var answers = load_answers_1.loadAnswers();
-  var sceneRenderer = renderer_1.makeRenderer('THREE', 0x000000);
+  var color = load_color_1.loadColor();
+  var rendererType = load_renderer_type_1.loadRendererType();
+  var sceneRenderer = renderer_1.makeRenderer(rendererType, color);
   sceneRenderer.showBall(document.body);
-  document.addEventListener('click', function (event) {
-    var answer = getRandomAnswer().text;
-    sceneRenderer.showAnswer({
-      answer: answer,
-      event: event,
-      lineSeparator: '|'
-    });
-  });
+  var showAnswer = create_show_answer_1.createShowAnswer(sceneRenderer, __spreadArrays(answers));
+  var showAnswerOnShake = create_motion_detector_1.createMotionDetector(function () {
+    return sceneRenderer.hideAnswer();
+  }, showAnswer);
+  document.addEventListener('click', showAnswer);
+  window.addEventListener('devicemotion', showAnswerOnShake);
+}
+},{"./create-motion-detector":"create-motion-detector.ts","./create-show-answer":"create-show-answer.ts","./load-answers":"load-answers/index.ts","./load-color":"load-color.ts","./load-renderer-type":"load-renderer-type.ts","./pwa-loader":"pwa-loader.ts","./renderer":"renderer/index.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var global = arguments[3];
+var OVERLAY_ID = '__parcel__error__overlay__';
+var OldModule = module.bundle.Module;
 
-  function getRandomAnswer() {
-    var maxIndex = answers.length - 1;
-    var index = Math.floor(Math.random() * Math.floor(maxIndex));
-    return answers[index];
+function Module(moduleName) {
+  OldModule.call(this, moduleName);
+  this.hot = {
+    data: module.bundle.hotData,
+    _acceptCallbacks: [],
+    _disposeCallbacks: [],
+    accept: function (fn) {
+      this._acceptCallbacks.push(fn || function () {});
+    },
+    dispose: function (fn) {
+      this._disposeCallbacks.push(fn);
+    }
+  };
+  module.bundle.hotData = null;
+}
+
+module.bundle.Module = Module;
+var checkedAssets, assetsToAccept;
+var parent = module.bundle.parent;
+
+if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
+  var hostname = "" || location.hostname;
+  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52124" + '/');
+
+  ws.onmessage = function (event) {
+    checkedAssets = {};
+    assetsToAccept = [];
+    var data = JSON.parse(event.data);
+
+    if (data.type === 'update') {
+      var handled = false;
+      data.assets.forEach(function (asset) {
+        if (!asset.isNew) {
+          var didAccept = hmrAcceptCheck(global.parcelRequire, asset.id);
+
+          if (didAccept) {
+            handled = true;
+          }
+        }
+      }); // Enable HMR for CSS by default.
+
+      handled = handled || data.assets.every(function (asset) {
+        return asset.type === 'css' && asset.generated.js;
+      });
+
+      if (handled) {
+        console.clear();
+        data.assets.forEach(function (asset) {
+          hmrApply(global.parcelRequire, asset);
+        });
+        assetsToAccept.forEach(function (v) {
+          hmrAcceptRun(v[0], v[1]);
+        });
+      } else if (location.reload) {
+        // `location` global exists in a web worker context but lacks `.reload()` function.
+        location.reload();
+      }
+    }
+
+    if (data.type === 'reload') {
+      ws.close();
+
+      ws.onclose = function () {
+        location.reload();
+      };
+    }
+
+    if (data.type === 'error-resolved') {
+      console.log('[parcel] ✨ Error resolved');
+      removeErrorOverlay();
+    }
+
+    if (data.type === 'error') {
+      console.error('[parcel] 🚨  ' + data.error.message + '\n' + data.error.stack);
+      removeErrorOverlay();
+      var overlay = createErrorOverlay(data);
+      document.body.appendChild(overlay);
+    }
+  };
+}
+
+function removeErrorOverlay() {
+  var overlay = document.getElementById(OVERLAY_ID);
+
+  if (overlay) {
+    overlay.remove();
   }
 }
-},{"./load-answers":"WN8m","./pwa-loader":"XhDE","./renderer":"b60D"}]},{},["QCba"], null)
+
+function createErrorOverlay(data) {
+  var overlay = document.createElement('div');
+  overlay.id = OVERLAY_ID; // html encode message and stack trace
+
+  var message = document.createElement('div');
+  var stackTrace = document.createElement('pre');
+  message.innerText = data.error.message;
+  stackTrace.innerText = data.error.stack;
+  overlay.innerHTML = '<div style="background: black; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; opacity: 0.85; font-family: Menlo, Consolas, monospace; z-index: 9999;">' + '<span style="background: red; padding: 2px 4px; border-radius: 2px;">ERROR</span>' + '<span style="top: 2px; margin-left: 5px; position: relative;">🚨</span>' + '<div style="font-size: 18px; font-weight: bold; margin-top: 20px;">' + message.innerHTML + '</div>' + '<pre>' + stackTrace.innerHTML + '</pre>' + '</div>';
+  return overlay;
+}
+
+function getParents(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return [];
+  }
+
+  var parents = [];
+  var k, d, dep;
+
+  for (k in modules) {
+    for (d in modules[k][1]) {
+      dep = modules[k][1][d];
+
+      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
+        parents.push(k);
+      }
+    }
+  }
+
+  if (bundle.parent) {
+    parents = parents.concat(getParents(bundle.parent, id));
+  }
+
+  return parents;
+}
+
+function hmrApply(bundle, asset) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (modules[asset.id] || !bundle.parent) {
+    var fn = new Function('require', 'module', 'exports', asset.generated.js);
+    asset.isNew = !modules[asset.id];
+    modules[asset.id] = [fn, asset.deps];
+  } else if (bundle.parent) {
+    hmrApply(bundle.parent, asset);
+  }
+}
+
+function hmrAcceptCheck(bundle, id) {
+  var modules = bundle.modules;
+
+  if (!modules) {
+    return;
+  }
+
+  if (!modules[id] && bundle.parent) {
+    return hmrAcceptCheck(bundle.parent, id);
+  }
+
+  if (checkedAssets[id]) {
+    return;
+  }
+
+  checkedAssets[id] = true;
+  var cached = bundle.cache[id];
+  assetsToAccept.push([bundle, id]);
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAcceptCheck(global.parcelRequire, id);
+  });
+}
+
+function hmrAcceptRun(bundle, id) {
+  var cached = bundle.cache[id];
+  bundle.hotData = {};
+
+  if (cached) {
+    cached.hot.data = bundle.hotData;
+  }
+
+  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
+    cached.hot._disposeCallbacks.forEach(function (cb) {
+      cb(bundle.hotData);
+    });
+  }
+
+  delete bundle.cache[id];
+  bundle(id);
+  cached = bundle.cache[id];
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    cached.hot._acceptCallbacks.forEach(function (cb) {
+      cb();
+    });
+
+    return true;
+  }
+}
+},{}]},{},["../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.ts"], null)
+//# sourceMappingURL=/src.77de5100.js.map
