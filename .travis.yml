@@ -15,8 +15,7 @@ script:
 
 branches:
   only:
-    - gh-pages
-    - /.*/
+    - master
 
 deploy:
   provider: pages
