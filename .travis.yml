@@ -13,9 +13,9 @@ install:
 script:
   - npm run build
 
-branches:
-  only:
-    - master
+#branches:
+  #only:
+    #- master
 
 deploy:
   provider: pages
