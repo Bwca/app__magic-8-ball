@@ -9,8 +9,8 @@ export function makeRenderer(type: RendererType, ballColor: string | number): Ab
   switch (type) {
     case 'HTML':
       return makeHtmlRenderer();
-   /*  case 'THREE':
-      return makeTHREERenderer(ballColor); */
+    case 'THREE':
+      return makeTHREERenderer(ballColor);
     default:
       throw new Error('No renderer type specified!');
   }
