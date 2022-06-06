@@ -33,6 +33,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@merry-solutions/debounce": "^1.0.1",
     "@types/pug": "^2.0.4",
     "fork-magic-8-ball": "file:fork-magic-8-ball-1.1.0.tgz"
   }
