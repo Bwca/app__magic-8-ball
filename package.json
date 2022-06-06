@@ -10,7 +10,8 @@
     "start": "parcel ./src/index.html",
     "build": "parcel build src/index.html --public-url './' --no-minify --no-source-maps",
     "css-types": "css-types",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/node": "^13.13.5",
     "css-types": "^1.0.2",
+    "gh-pages": "^4.0.0",
     "parcel-bundler": "^1.12.4",
     "pug": "^2.0.4",
     "sass": "^1.26.5",
