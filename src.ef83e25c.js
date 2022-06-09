@@ -643,7 +643,7 @@ function registerSW() {
 
           return [4
           /*yield*/
-          , navigator.serviceWorker.register("sw.js")];
+          , navigator.serviceWorker.register("%27./%27/sw.js")];
 
         case 2:
           _b.sent();
@@ -37373,22 +37373,23 @@ $parcel$export(module.exports, "THREEBall8Renderer", () => $617379b6fa3b70ce$exp
 
 
 
-function $a648e235a1603036$export$860ad1dd843478b1(answer, lineSeparator) {
-    const answerLines = answer.split(lineSeparator);
+function $a648e235a1603036$export$860ad1dd843478b1({ answer: answer , fontParams: fontParams  }) {
+    const answerLines = answer.text.split(answer.lineSeparator);
+    const { fillStyle: fillStyle , font: font , size: size , sizeRatio: sizeRatio  } = fontParams;
+    const side = 256;
     const canvasElement = document.createElement("canvas");
-    canvasElement.width = canvasElement.height = 256;
+    canvasElement.width = canvasElement.height = side;
     const ctx = canvasElement.getContext("2d");
     if (!ctx) throw Error("Could not obtain 2d context for answer!");
-    ctx.clearRect(0, 0, 256, 256);
+    ctx.clearRect(0, 0, side, side);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const size = 30;
-    const sizeRatio = 1.0;
-    ctx.font = `bold ${size}px 'Courier New'`;
+    ctx.font = font;
     const startPoint = (answerLines.length - 1) * 0.5 * size * sizeRatio;
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = fillStyle;
+    const halfSide = (side - 2) / 2;
     answerLines.forEach((pc, idx)=>{
-        ctx.fillText(pc.toUpperCase(), 127, 127 - startPoint + idx * size * sizeRatio);
+        ctx.fillText(pc.toUpperCase(), halfSide, halfSide - startPoint + idx * size * sizeRatio);
     });
     return new (0, $iEn1Z$three.CanvasTexture)(canvasElement);
 }
@@ -38603,7 +38604,7 @@ class $617379b6fa3b70ce$export$cef218e13b529011 {
     // eslint-disable-next-line no-unused-vars
     showBall(host) {
         this.startAnimationLoop();
-        this.generateAnimation(this.globalUniforms.textBackgroundVisibility, 1, 0.3, 2000, 2000).start();
+        this.generateAnimation(this.globalUniforms.textBackgroundVisibility, 1, 0.25, 2000, 1000).start();
     }
     hideAnswer() {
         if (!this.isTextVisible || this.isRunning) return;
@@ -38698,7 +38699,19 @@ class $617379b6fa3b70ce$export$cef218e13b529011 {
         });
     }
     setNewText(text, lineSeparator) {
-        this.globalUniforms.text.value = (0, $a648e235a1603036$export$860ad1dd843478b1)(text, lineSeparator);
+        this.globalUniforms.text.value = (0, $a648e235a1603036$export$860ad1dd843478b1)({
+            answer: {
+                lineSeparator: lineSeparator,
+                text: text
+            },
+            fontParams: {
+                fillStyle: "#FFF",
+                size: 35,
+                // eslint-disable-next-line quotes
+                font: "bold 35px 'Arial'",
+                sizeRatio: 1
+            }
+        });
     }
     generateAnimation(param, valStart, valEnd, duration = 1000, delay = 0) {
         return new (0, $iEn1Z$tweenjstweenjs.Tween)({
