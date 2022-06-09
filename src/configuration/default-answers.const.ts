@@ -1,6 +1,6 @@
-import { AnswerTypes } from './answer-types.enum';
-import { Answer } from './answer.model';
-import { insertAnswerLineBreaks } from './insert-answer-line-breaks';
+import { AnswerTypes } from '../answer/answer-types.enum';
+import { Answer } from '../answer/answer.model';
+import { insertAnswerLineBreaks } from '../answer/insert-answer-line-breaks';
 
 export const DEFAULT_ANSWERS: Readonly<Answer[]> = [
   {
