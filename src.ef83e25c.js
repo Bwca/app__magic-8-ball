@@ -643,7 +643,7 @@ function registerSW() {
 
           return [4
           /*yield*/
-          , navigator.serviceWorker.register("%27./%27/sw.js")];
+          , navigator.serviceWorker.register("sw.js")];
 
         case 2:
           _b.sent();
