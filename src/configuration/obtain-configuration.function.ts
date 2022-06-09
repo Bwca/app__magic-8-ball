@@ -1,6 +1,6 @@
-import { Answer } from '../answer';
-import { ParamKeys } from '../param-keys.enum';
+import { ParamKeys } from './param-keys.enum';
 import { RendererType } from '../renderer/models/renderer-type';
+import { Answer } from '../shared/models/answer.model';
 import { DEFAULT_ANSWERS } from './default-answers.const';
 
 export function obtainConfiguration(): Configuration {
