@@ -1,7 +1,7 @@
-import { ParamKeys } from './param-keys.enum';
-import { RendererType } from '../renderer/models/renderer-type';
 import { Answer } from '../shared/models/answer.model';
+import { RendererType } from '../shared/models/renderer-type';
 import { DEFAULT_ANSWERS } from './default-answers.const';
+import { ParamKeys } from './param-keys.enum';
 
 export function obtainConfiguration(): Configuration {
   const params = new URLSearchParams(window.location.search);

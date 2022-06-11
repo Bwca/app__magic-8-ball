@@ -1,1 +1,1 @@
-export * from './make-renderer/make-renderer';
+export { makeRenderer } from './make-renderer/make-renderer';
