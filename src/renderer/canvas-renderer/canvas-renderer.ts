@@ -1,5 +1,3 @@
-import { AbstractRenderer } from '../models/abstract-renderer';
-
 export class CanvasRenderer {
   private canvas: HTMLCanvasElement;
   constructor(canvas: HTMLCanvasElement) {

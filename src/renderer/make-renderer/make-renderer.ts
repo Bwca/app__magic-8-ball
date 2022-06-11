@@ -1,9 +1,9 @@
 import { THREEBall8Renderer } from 'fork-magic-8-ball';
 
+import { AbstractRenderer } from '../../shared/models/abstract-renderer';
+import { RendererType } from '../../shared/models/renderer-type';
 import { CanvasRenderer } from '../canvas-renderer/canvas-renderer';
 import { HtmlRenderer } from '../html-renderer/html-renderer';
-import { AbstractRenderer } from '../models/abstract-renderer';
-import { RendererType } from '../models/renderer-type';
 
 export function makeRenderer(type: RendererType, ballColor: string | number): AbstractRenderer {
   switch (type) {

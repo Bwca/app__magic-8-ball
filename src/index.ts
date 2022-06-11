@@ -1,20 +1,15 @@
-import { createMotionDetector } from './create-motion-detector';
+import { obtainConfiguration } from './configuration';
+import { createMotionDetector } from './create-motion-detector.function';
 import { createShowAnswer } from './create-show-answer';
-import { loadAnswers } from './load-answers';
-import { loadColor } from './load-color';
-import { loadRendererType } from './load-renderer-type';
-import { initPwa } from './pwa-loader';
+import { initPwa } from './init-pwa.function';
 import { makeRenderer } from './renderer';
 
 document.addEventListener('DOMContentLoaded', main);
 
 function main(): void {
   initPwa();
+  const { answers, color, rendererType } = obtainConfiguration();
 
-  const answers = loadAnswers();
-
-  const color = loadColor();
-  const rendererType = loadRendererType();
   const sceneRenderer = makeRenderer(rendererType, color);
   sceneRenderer.showBall(document.body);
 
