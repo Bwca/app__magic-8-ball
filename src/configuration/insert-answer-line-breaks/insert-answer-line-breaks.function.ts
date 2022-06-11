@@ -17,12 +17,12 @@ export function insertAnswerLineBreaks(answer: Answer): Answer {
       continue;
     }
     const lineToAdd = newLine.length === LINE_LIMIT ? newLine : currentLine;
-    textWithLineBreaks = textWithLineBreaks.concat(LINEBREAK_SYMBOL, lineToAdd);
+    textWithLineBreaks = textWithLineBreaks.concat(lineToAdd, LINEBREAK_SYMBOL);
     currentLine = newLine.length === LINE_LIMIT ? '' : word;
   }
 
   if (currentLine) {
-    textWithLineBreaks = textWithLineBreaks.concat(LINEBREAK_SYMBOL, currentLine);
+    textWithLineBreaks = textWithLineBreaks.concat(currentLine);
   }
 
   return { ...answer, text: textWithLineBreaks };

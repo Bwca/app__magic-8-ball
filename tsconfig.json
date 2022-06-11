@@ -5,7 +5,9 @@
     "lib": ["ESNext", "DOM"],
     "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["node_modules/@types"],
+    "experimentalDecorators": true
   },
   "include": ["src/**/*"]
 }
