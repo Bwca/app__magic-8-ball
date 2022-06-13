@@ -6,11 +6,11 @@ import { makeRenderer } from './renderer';
 
 document.addEventListener('DOMContentLoaded', main);
 
-function main(): void {
+async function main(): Promise<void> {
   initPwa();
   const { answers, color, rendererType } = obtainConfiguration();
 
-  const sceneRenderer = makeRenderer(rendererType, color);
+  const sceneRenderer = await makeRenderer(rendererType, color);
   sceneRenderer.showBall(document.body);
 
   const showAnswer = createShowAnswer(sceneRenderer, [...answers]);

@@ -3,3 +3,4 @@ dist
 .cache
 e2e/env
 .vscode
+.idea

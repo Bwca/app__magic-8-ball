@@ -1,11 +1,7 @@
-import { THREEBall8Renderer } from 'fork-magic-8-ball';
-
 import { AbstractRenderer } from '../../shared/models/abstract-renderer';
 import { RendererType } from '../../shared/models/renderer-type';
-import { CanvasRenderer } from '../canvas-renderer/canvas-renderer';
-import { HtmlRenderer } from '../html-renderer/html-renderer';
 
-export function makeRenderer(type: RendererType, ballColor: string | number): AbstractRenderer {
+export async function makeRenderer(type: RendererType, ballColor: string | number): Promise<AbstractRenderer> {
   switch (type) {
     case 'HTML':
       return makeHtmlRenderer();
@@ -17,18 +13,18 @@ export function makeRenderer(type: RendererType, ballColor: string | number): Ab
 }
 
 /** TODO: implement canvas renderer */
-function makeCanvasRenderer(): CanvasRenderer {
+async function makeCanvasRenderer(): Promise<AbstractRenderer> {
   const canvas = document.querySelector('canvas');
   if (!canvas) {
     throw new Error('NO CANVAS FOUND');
   }
-  return new CanvasRenderer(canvas);
+  return import('../canvas-renderer/canvas-renderer').then(({ CanvasRenderer }) => new CanvasRenderer(canvas));
 }
 
-function makeHtmlRenderer(): HtmlRenderer {
-  return new HtmlRenderer();
+async function makeHtmlRenderer(): Promise<AbstractRenderer> {
+  return import('../html-renderer/html-renderer').then(({ HtmlRenderer }) => new HtmlRenderer());
 }
 
-function makeTHREERenderer(ballColor: string | number): THREEBall8Renderer {
-  return new THREEBall8Renderer(ballColor);
+async function makeTHREERenderer(ballColor: string | number): Promise<AbstractRenderer> {
+  return import('fork-magic-8-ball').then(({ THREEBall8Renderer }) => new THREEBall8Renderer(ballColor));
 }
