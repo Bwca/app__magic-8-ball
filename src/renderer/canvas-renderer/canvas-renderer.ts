@@ -1,4 +1,6 @@
-export class CanvasRenderer {
+import { AbstractRenderer } from '../../shared/models/abstract-renderer';
+
+export class CanvasRenderer implements AbstractRenderer {
   private canvas: HTMLCanvasElement;
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -6,6 +8,10 @@ export class CanvasRenderer {
     this.fillCanvas();
     window.addEventListener('resize', () => this.fitCanvasToScreen());
   }
+  public hideAnswer(): void {
+    throw new Error('Method not implemented.');
+  }
+
   public showAnswer() {
     console.log('dispaying answer');
   }
