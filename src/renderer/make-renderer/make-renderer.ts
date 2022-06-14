@@ -26,5 +26,6 @@ async function makeHtmlRenderer(): Promise<AbstractRenderer> {
 }
 
 async function makeTHREERenderer(ballColor: string | number): Promise<AbstractRenderer> {
-  return import('fork-magic-8-ball').then(({ THREEBall8Renderer }) => new THREEBall8Renderer(ballColor));
+  const fov = outerWidth >= 600 ? 60 : 37;
+  return import('fork-magic-8-ball').then(({ THREEBall8Renderer }) => new THREEBall8Renderer(ballColor, fov));
 }

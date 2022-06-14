@@ -1,7 +1,7 @@
 {
   "name": "magic-8-ball",
   "version": "1.0.0",
-  "description": "",
+  "description": "It has all the answers",
   "main": "app.ts",
   "browserslist": [
     "last 1 Chrome version"
@@ -14,12 +14,24 @@
     "deploy": "gh-pages -d dist",
     "testyts": "testyts"
   },
+  "staticFiles": {
+    "staticPath": [
+      "src/static/icons",
+      "src/manifest.json"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Bwca/magic-8-ball.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "magic",
+    "predictions",
+    "ball 8",
+    "magic 8 ball",
+    "8 ball"
+  ],
+  "author": "Volodymyr Yepishev",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Bwca/magic-8-ball/issues"
@@ -30,6 +42,7 @@
     "css-types": "^1.0.2",
     "gh-pages": "^4.0.0",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.6.0",
     "pug": "^2.0.4",
     "sass": "^1.26.5",
     "testyts": "^1.5.0",
@@ -39,6 +52,6 @@
   "dependencies": {
     "@merry-solutions/debounce": "^1.0.1",
     "@types/pug": "^2.0.4",
-    "fork-magic-8-ball": "file:fork-magic-8-ball-1.3.1.tgz"
+    "fork-magic-8-ball": "file:fork-magic-8-ball-1.4.0.tgz"
   }
 }
