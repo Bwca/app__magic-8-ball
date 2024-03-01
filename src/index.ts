@@ -7,7 +7,10 @@ import { makeRenderer } from './renderer';
 document.addEventListener('DOMContentLoaded', main);
 
 async function main(): Promise<void> {
-  initPwa();
+  const isOpenedInIframe = window.location !== window.parent.location;
+  if (!isOpenedInIframe) {
+    initPwa();
+  }
   const { answers, color, rendererType } = obtainConfiguration();
 
   const sceneRenderer = await makeRenderer(rendererType, color);

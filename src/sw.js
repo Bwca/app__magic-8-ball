@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime';
 const cacheName = 'magic-8-ball-conf-1';
 const staticAssets = ['./', './index.html'];
 
-self.addEventListener('install', async (event) => {
+self.addEventListener('install', async () => {
   console.log('install event');
   const cache = await caches.open(cacheName);
   void cache.addAll(staticAssets);
