@@ -1,5 +1,5 @@
 import { obtainConfiguration } from './configuration';
-import { createMotionDetector } from './create-motion-detector.function';
+import { createMotionDetector } from './create-motion-detector';
 import { createShowAnswer } from './create-show-answer';
 import { initPwa } from './init-pwa.function';
 import { makeRenderer } from './renderer';
